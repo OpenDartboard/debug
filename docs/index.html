@@ -606,7 +606,7 @@
             const base64HTML = btoa(unescape(encodeURIComponent(localHTML)));
             const dataURL = `data:text/html;base64,${base64HTML}`;
 
-            consoe.log('dataURL', dataURL)
+            console.log('dataURL', dataURL)
             
             // Open in new tab
             const newTab = window.open(dataURL, '_blank');
