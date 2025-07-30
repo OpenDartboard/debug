@@ -607,6 +607,11 @@
             });
         }
         
+        
+        // updateCurrenthost 
+
+        
+        
         // Connection management
         function setupConnection() {
             const hostInput = document.getElementById('hostInput');
@@ -635,7 +640,7 @@
             if (connected) return;
             
             updateConnectionStatus('connecting', `Connecting to ${currentHost}...`);
-            
+
             // Check health first
             checkHealth().then(healthy => {
                 if (healthy) {
