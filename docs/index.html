@@ -421,15 +421,6 @@
                 <h3 class="section-title">Connection</h3>
                 <div id="connectionStatus" class="status disconnected">❌ Disconnected</div>
                 
-                <!-- Mixed Content Warning & Solution -->
-                <div id="mixedContentWarning" style="display: none; background: #2f1a1a; color: #f85149; border: 1px solid #5a2d2d; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0; font-size: 12px;">
-                    <strong>⚠️ HTTPS → HTTP Blocked</strong><br>
-                    This GitHub Pages version can't connect to HTTP servers.
-                    <br>
-                    <button onclick="openLocalVersion()" style="margin: 0.5rem 0 0.25rem 0; padding: 0.5rem; background: #238636; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; width: 100%;">🚀 Open Local HTTP Version</button>
-                    <div style="font-size: 11px; color: #7d8590; margin-top: 0.25rem;">Opens dashboard in new tab that can connect to HTTP servers</div>
-                </div>
-                
                 <!-- Host and Port inputs -->
                 <div style="display: grid; grid-template-columns: 1fr 80px; gap: 0.5rem; margin: 0.5rem 0 0.25rem 0;">
                     <label style="font-size: 12px; color: #7d8590; margin-bottom: -6px;">Host</label>
@@ -442,7 +433,7 @@
                 
                 <div class="connection-help">
                     If you are running the server remotely, you can connect using:
-                    <a href="#" onclick="javascript:a=getElementById('hostInput');a.value='opendartboard.local';a.dispatchEvent(new Event('change'));">opendartboard.local</a> or via a IP address <a href="#" onclick="javascript:a=getElementById('hostInput');a.value='192.168.x.x';a.dispatchEvent(new Event('change'));">192.168.x.x</a>
+                    <a href="#" onclick="javascript:a=getElementById('hostInput');a.value='opendartboard.local';a.dispatchEvent(new Event('change'));">opendartboard.local</a> or via a IP address <a href="#" onclick="javascript:a=getElementById('hostInput');a.value='192.168.x.x';a.dispatchEvent(new Event('change'));">192.168.x.x</a>.
                 </div>
                 
                 <button id="connectBtn" class="connect-btn">Connect</button>
@@ -572,68 +563,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             setupTabs();
             setupConnection();
-            detectMixedContentIssue();
             
             // Try to connect on load
             setTimeout(() => {
                 document.getElementById('connectBtn').click();
             }, 500);
         });
-        
-        // Detect mixed content issues and show solution
-        function detectMixedContentIssue() {
-            const isHTTPS = window.location.protocol === 'https:';
-            const isGitHubPages = window.location.hostname.includes('github.io');
-            const warning = document.getElementById('mixedContentWarning');
-            
-            if (isHTTPS || isGitHubPages) {
-                warning.style.display = 'block';
-            }
-        }
-        
-        // Create and open local HTTP-compatible version
-        function openLocalVersion() {
-            // Get the current page HTML
-            const currentHTML = document.documentElement.outerHTML;
-            
-            // Create a modified version that removes the mixed content warning
-            const localHTML = currentHTML.replace(
-                /(<div id="mixedContentWarning"[^>]*>[\s\S]*?<\/div>)/,
-                '<div id="mixedContentWarning" style="display: none;"></div>'
-            );
-            
-            // Create base64 data URL
-            const base64HTML = btoa(unescape(encodeURIComponent(localHTML)));
-            const dataURL = `data:text/html;base64,${base64HTML}`;
-
-            console.log('dataURL', dataURL)
-            
-            // Open in new tab
-            const newTab = window.open(dataURL, '_blank');
-            
-            if (newTab) {
-                // Show success message
-                showTemporaryMessage('✅ Local version opened in new tab! Use that tab to connect to your HTTP server.');
-            } else {
-                // Show error if popup blocked
-                showTemporaryMessage('❌ Popup blocked! Please allow popups and try again.');
-            }
-        }
-        
-        // Show temporary status message
-        function showTemporaryMessage(message) {
-            const status = document.getElementById('connectionStatus');
-            const originalContent = status.textContent;
-            const originalClass = status.className;
-            
-            status.textContent = message;
-            status.className = 'status connected';
-            
-            setTimeout(() => {
-                status.textContent = originalContent;
-                status.className = originalClass;
-            }, 3000);
-        }
         
         // Tab system
         function setupTabs() {
@@ -773,17 +708,7 @@
                 document.getElementById('healthStatus').textContent = `✅ ${data.service || 'Healthy'}`;
                 return true;
             } catch (error) {
-                console.error('Health check failed:', error);
-                
-                // Check if it's a mixed content error
-                if (error.message.includes('Mixed Content') || 
-                    error.message.includes('blocked') ||
-                    window.location.protocol === 'https:') {
-                    document.getElementById('healthStatus').textContent = '🚫 Mixed Content Blocked';
-                    document.getElementById('mixedContentWarning').style.display = 'block';
-                } else {
-                    document.getElementById('healthStatus').textContent = '❌ Unreachable';
-                }
+                document.getElementById('healthStatus').textContent = '❌ Unreachable';
                 return false;
             }
         }
